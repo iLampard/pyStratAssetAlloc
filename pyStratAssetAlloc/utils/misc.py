@@ -1,10 +1,11 @@
-import datetime as dt
 import pandas as pd
-from pyStratAssetAlloc.utils.windMarketDataHandler import WindMarketDataHandler
-from pyStratAssetAlloc.utils.tsMarketDataHandler import TSMarketDataHandler
+
 from pyStratAssetAlloc.enum import DataSource
 from pyStratAssetAlloc.enum import DfReturnType
 from pyStratAssetAlloc.enum import FreqType
+from pyStratAssetAlloc.utils.data_provider import TSMarketDataHandler
+from pyStratAssetAlloc.utils.data_provider import WindMarketDataHandler
+
 
 def get_sec_price(start_date, end_date, sec_ids, data_source, freq=FreqType.EOD, field=['close'],
                   return_type=DfReturnType.DateIndexAndSecIDCol, csv_path=None):

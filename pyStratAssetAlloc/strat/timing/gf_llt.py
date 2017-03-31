@@ -10,7 +10,7 @@ from PyFin.api import DIFF
 
 
 class GFLLT(Strategy):
-    def __init__(self, alpha=2.0 / 61.0):
+    def __init__(self, alpha=2.0/61.0):
         self.signal = DIFF(LLT(alpha=alpha, dependency='close'))
 
     def handle_data(self):

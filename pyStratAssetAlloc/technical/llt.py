@@ -16,14 +16,15 @@ class LLT(StatelessSingleValueAccumulator):
 
     def push(self, data):
         self._underlying.push(data)
-        value = self._underlying.result()[0]
+        underlying = self._underlying.result()
+        value = underlying[0]
         if np.isnan(value):
             return np.nan
         if len(self._llt) == 2:
             item = np.zeros(5)
-            item[0] = (self._alpha - self._alpha ** 2 / 4.0) * (self._underlying.result()[0])
-            item[1] = (self._alpha ** 2 / 2.0) * (self._underlying.result()[1])
-            item[2] = -(self._alpha - 3 * (self._alpha ** 2) / 4.0) * (self._underlying.result()[2])
+            item[0] = (self._alpha - self._alpha ** 2 / 4.0) * (underlying[0])
+            item[1] = (self._alpha ** 2 / 2.0) * (underlying[1])
+            item[2] = -(self._alpha - 3 * (self._alpha ** 2) / 4.0) * (underlying[2])
             item[3] = 2 * (1 - self._alpha) * self._llt[1]
             item[4] = -(1 - self._alpha) ** 2 * self._llt[0]
             self._llt.append(sum(item))
