@@ -1,5 +1,6 @@
-import pandas as pd
+# -*- coding: utf-8 -*-
 
+import pandas as pd
 from pyStratAssetAlloc.enum import DataSource
 from pyStratAssetAlloc.enum import DfReturnType
 from pyStratAssetAlloc.enum import FreqType

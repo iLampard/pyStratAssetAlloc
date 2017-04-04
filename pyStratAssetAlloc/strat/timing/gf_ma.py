@@ -11,6 +11,7 @@ from PyFin.api import MA
 from PyFin.api import DIFF
 from enum import IntEnum
 from enum import unique
+from decouple import config
 
 
 @unique
@@ -21,8 +22,8 @@ class Cross(IntEnum):
 
 
 class GFMovingAverageCrossStrategy(Strategy):
-    def __init__(self):
-        distance = MA(20, 'close') - MA(90, 'close')
+    def __init__(self, ma_short, ma_long):
+        distance = MA(ma_short, 'close') - MA(ma_long, 'close')
         indicator = DIFF(distance)
         self.diff_distance = indicator
         self.distance = distance
@@ -53,8 +54,11 @@ def run_example():
     universe = ['000300.zicn']
     start_date = dt.datetime(2005, 1, 1)
     end_date = dt.datetime(2017, 1, 1)
+    ma_short = config('GF_MA_SHORT', default=20, cast=int)
+    ma_long = config('GF_MA_LONG', default=90, cast=int)
 
     strategyRunner(userStrategy=GFMovingAverageCrossStrategy,
+                   strategyParameters=(ma_short, ma_long),
                    symbolList=universe,
                    startDate=start_date,
                    endDate=end_date,

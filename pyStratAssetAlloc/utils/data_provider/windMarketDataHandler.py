@@ -16,14 +16,8 @@ except ImportError:
 
 
 class WindMarketDataHandler(object):
-    def __init__(self, sec_ids, start_date, end_date, freq=None, fields=None,
-                 return_type=DfReturnType.DateIndexAndSecIDCol):
-        self._secID = sec_ids
-        self._startDate = start_date
-        self._endDate = end_date
-        self._freq = FreqType.EOD if freq is None else freq
-        self._fields = ['open', 'high', 'low', 'close', 'volume'] if fields is None else fields
-        self._returnType = return_type
+    def __init__(self):
+        pass
 
     @classmethod
     def get_sec_price_on_date(cls, start_date, end_date, sec_ids, freq=FreqType.EOD, field=['close'],

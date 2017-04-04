@@ -10,14 +10,8 @@ from pyStratAssetAlloc.enum import FreqType
 
 
 class TSMarketDataHandler(object):
-    def __init__(self, sec_ids, start_date, end_date, freq=None, fields=None,
-                 return_type=DfReturnType.DateIndexAndSecIDCol):
-        self._secID = sec_ids
-        self._startDate = start_date
-        self._endDate = end_date
-        self._freq = FreqType.EOD if freq is None else freq
-        self._fields = ['open', 'high', 'low', 'close', 'volume'] if fields is None else fields
-        self._returnType = return_type
+    def __init__(self):
+        pass
 
     @classmethod
     def get_sec_price_on_date(cls, start_date, end_date, sec_ids, freq=FreqType.EOD, field=['close'],
@@ -28,7 +22,7 @@ class TSMarketDataHandler(object):
         :param sec_ids: list of str, sec IDs
         :param freq: FreqType
         :param return_type: DfReturnType
-        :param field: str, filed of data to be queried
+        :param field: list of str, optional, filed of data to be queried
         :return: pd.DataFrame, index = date, col = sec ID
         """
 
@@ -38,7 +32,7 @@ class TSMarketDataHandler(object):
 
         ret = pd.DataFrame()
         for s in sec_ids:
-            raw_data = ts.get_h_data(s, start_date, end_date)
+            raw_data = ts.get_k_data(s, start=start_date, end=end_date, ktype=freq)
             if return_type == DfReturnType.DateIndexAndSecIDCol:
                 ret = pd.concat([ret, raw_data[field]], axis=1)
             else:

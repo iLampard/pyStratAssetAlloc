@@ -5,12 +5,13 @@ from AlgoTrading.Strategy.Strategy import Strategy
 from AlgoTrading.Backtest import strategyRunner
 from AlgoTrading.Enums import DataSource
 from AlgoTrading.api import PortfolioType
+from decouple import config
 from pyStratAssetAlloc.technical import LLT
 from PyFin.api import DIFF
 
 
 class GFLLT(Strategy):
-    def __init__(self, alpha=2.0/61.0):
+    def __init__(self, alpha):
         self.signal = DIFF(LLT(alpha=alpha, dependency='close'))
 
     def handle_data(self):
@@ -27,13 +28,14 @@ def run_example():
     universe = ['000300.zicn']
     start_date = dt.datetime(2005, 1, 1)
     end_date = dt.datetime(2017, 1, 1)
+    alpha = config('GF_LLT_ALPHA', default=2.0/61, cast=float)
 
     strategyRunner(userStrategy=GFLLT,
+                   strategyParameters=(alpha),
                    symbolList=universe,
                    startDate=start_date,
                    endDate=end_date,
                    benchmark='000300.zicn',
-                   dataSource=DataSource.WIND,
                    logLevel='info',
                    saveFile=True,
                    portfolioType=PortfolioType.CashManageable,
