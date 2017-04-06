@@ -26,12 +26,12 @@ class GFLLT(Strategy):
 
 def run_example():
     universe = ['000300.zicn']
-    start_date = dt.datetime(2005, 1, 1)
-    end_date = dt.datetime(2017, 1, 1)
+    start_date = dt.datetime(2013, 1, 1)
+    end_date = dt.datetime(2017, 4, 1)
     alpha = config('GF_LLT_ALPHA', default=2.0/61, cast=float)
 
     strategyRunner(userStrategy=GFLLT,
-                   strategyParameters=(alpha),
+                   strategyParameters=[alpha],
                    symbolList=universe,
                    startDate=start_date,
                    endDate=end_date,
