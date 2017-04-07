@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import numpy as np
 from AlgoTrading.Backtest import strategyRunner
 from AlgoTrading.api import PortfolioType
