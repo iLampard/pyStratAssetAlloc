@@ -11,7 +11,7 @@ from AlgoTrading.api import PortfolioType
 from decouple import config
 from pyStratAssetAlloc.technical import RPS
 from PyFin.api import HIST
-
+import itertools
 
 class GXRPS(Strategy):
     def __init__(self, window_min_max, window_ma, vol_diff_slice):
@@ -74,6 +74,11 @@ def run_example():
                    plot=True,
                    freq='D')
 
+def parameters_generator():
+    window_min_max = range(200, 215, 5)
+    window_ma = range(1, 3, 1)
+    vol_diff_slice = [True, False]
+    return itertools.product(window_min_max, window_ma, vol_diff_slice), ['min_max', 'ma', 'vol_diff_slice']
 
 if __name__ == "__main__":
     from VisualPortfolio.Env import Settings
