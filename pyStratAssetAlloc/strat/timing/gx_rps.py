@@ -25,32 +25,35 @@ class GXRPS(Strategy):
         for sec in self.universe:
             if np.isnan(self.rps[sec]):
                 continue
-            window = self.window_layer(self.rps[sec]) if self.vol_diff_slice else int(self.rps[sec]*100)
+            window = get_window_layer(self.rps[sec]) if self.vol_diff_slice else int(self.rps[sec] * 100)
             price_open = self.hist_open[sec][:window]
             price_high = self.hist_high[sec][:window]
             price_low = self.hist_low[sec][:window]
-            signal = self.vol_diff(price_open, price_high, price_low)
+            signal = calc_vol_diff(price_open, price_high, price_low)
 
             if signal > 0 >= self.secPos[sec]:
                 self.order_to_pct(sec, 1, 1)
             elif signal < 0 <= self.secPos[sec]:
                 self.order_to_pct(sec, -1, 1)
 
-    def vol_diff(self, price_open, price_high, price_low):
-        return np.mean((price_high - price_open) / price_open - (price_open - price_low) / price_open)
 
-    def window_layer(self, rps):
-        if rps <= 0.2:
-            window = 20
-        elif rps <= 0.4:
-            window = 40
-        elif rps <= 0.6:
-            window = 60
-        elif rps <= 0.8:
-            window = 80
-        else:
-            window = 100
-        return window
+def calc_vol_diff(price_open, price_high, price_low):
+    return np.mean((price_high - price_open) / price_open - (price_open - price_low) / price_open)
+
+
+def get_window_layer(rps):
+    if rps <= 0.2:
+        window = 20
+    elif rps <= 0.4:
+        window = 40
+    elif rps <= 0.6:
+        window = 60
+    elif rps <= 0.8:
+        window = 80
+    else:
+        window = 100
+    return window
+
 
 def run_example():
     universe = ['000300.zicn']
@@ -60,7 +63,7 @@ def run_example():
     window_ma = config('GX_WINDOW_MA', default=9, cast=int)
     vol_diff_slice = config('GX_VOL_DIFF_SLICE', default=False, cast=bool)
     strategyRunner(userStrategy=GXRPS,
-                   strategyParameters=(window_min_max, window_ma,vol_diff_slice),
+                   strategyParameters=(window_min_max, window_ma, vol_diff_slice),
                    symbolList=universe,
                    startDate=start_date,
                    endDate=end_date,
