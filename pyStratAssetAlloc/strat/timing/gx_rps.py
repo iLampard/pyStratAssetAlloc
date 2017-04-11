@@ -4,14 +4,16 @@
 
 import datetime as dt
 import numpy as np
+import itertools
 from AlgoTrading.Strategy.Strategy import Strategy
 from AlgoTrading.Backtest import strategyRunner
 from AlgoTrading.Enums import DataSource
 from AlgoTrading.api import PortfolioType
 from decouple import config
 from pyStratAssetAlloc.technical import RPS
+from pyStratAssetAlloc.strat.optimizer import run_param_grid_search
 from PyFin.api import HIST
-import itertools
+
 
 class GXRPS(Strategy):
     def __init__(self, window_min_max, window_ma, vol_diff_slice):
@@ -55,30 +57,41 @@ def get_window_layer(rps):
     return window
 
 
-def run_example():
+def run_example(run_optimization=False):
     universe = ['000300.zicn']
     start_date = dt.datetime(2010, 1, 1)
     end_date = dt.datetime(2017, 4, 1)
     window_min_max = config('GX_WINDOW_MIN_MAX', default=250, cast=int)
     window_ma = config('GX_WINDOW_MA', default=9, cast=int)
     vol_diff_slice = config('GX_VOL_DIFF_SLICE', default=False, cast=bool)
-    strategyRunner(userStrategy=GXRPS,
-                   strategyParameters=(window_min_max, window_ma, vol_diff_slice),
-                   symbolList=universe,
-                   startDate=start_date,
-                   endDate=end_date,
-                   benchmark='000300.zicn',
-                   logLevel='info',
-                   saveFile=True,
-                   portfolioType=PortfolioType.CashManageable,
-                   plot=True,
-                   freq='D')
+    if run_optimization:
+        params_set, params_name = parameters_generator()
+        run_param_grid_search(strat=GXRPS,
+                              universe=universe,
+                              start_date=start_date,
+                              end_date=end_date,
+                              params_set=params_set,
+                              params_name=params_name)
+    else:
+        strategyRunner(userStrategy=GXRPS,
+                       strategyParameters=(window_min_max, window_ma, vol_diff_slice),
+                       symbolList=universe,
+                       startDate=start_date,
+                       endDate=end_date,
+                       benchmark='000300.zicn',
+                       logLevel='info',
+                       saveFile=True,
+                       portfolioType=PortfolioType.CashManageable,
+                       plot=True,
+                       freq='D')
+
 
 def parameters_generator():
     window_min_max = range(200, 215, 5)
     window_ma = range(1, 3, 1)
     vol_diff_slice = [True, False]
     return itertools.product(window_min_max, window_ma, vol_diff_slice), ['min_max', 'ma', 'vol_diff_slice']
+
 
 if __name__ == "__main__":
     from VisualPortfolio.Env import Settings
@@ -87,7 +100,7 @@ if __name__ == "__main__":
     Settings.set_source(DataSource.WIND)
     startTime = dt.datetime.now()
     print("Start: %s" % startTime)
-    run_example()
+    run_example(run_optimization=True)
     endTime = dt.datetime.now()
     print("End : %s" % endTime)
     print("Elapsed: %s" % (endTime - startTime))
