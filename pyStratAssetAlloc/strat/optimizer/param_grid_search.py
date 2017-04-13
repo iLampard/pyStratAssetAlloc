@@ -6,31 +6,29 @@ from AlgoTrading.api import PortfolioType
 import pandas as pd
 
 
-
-
-def run_param_grid_search(strat, universe, start_date, end_date, para_range, para_name, **kwargs):
+def run_param_grid_search(strat, universe, start_date, end_date, params_set, params_name, **kwargs):
     universe = universe
     start_date = start_date
     end_date = end_date
     benchmark = kwargs.get('benchmark', universe[0])
-    logLevel = kwargs.get('logLevel', 'critical')
-    portfolioType = kwargs.get('portfolioType', PortfolioType.CashManageable)
+    log_level = kwargs.get('logLevel', 'critical')
+    ptf_type = kwargs.get('portfolioType', PortfolioType.CashManageable)
     freq = kwargs.get('freq', 'D')
     record = pd.DataFrame()
-    for params in para_range:
+    for params in params_set:
         result = strategyRunner(userStrategy=strat,
                                 strategyParameters=params,
                                 symbolList=universe,
                                 startDate=start_date,
                                 endDate=end_date,
                                 benchmark=benchmark,
-                                logLevel=logLevel,
-                                portfolioType=portfolioType,
+                                logLevel=log_level,
+                                portfolioType=ptf_type,
                                 freq=freq,
                                 plot=False,
                                 saveFile=False)['perf_metric']
 
-        row = pd.Series(index=para_name, data=np.array(params))
+        row = pd.Series(index=params_name, data=np.array(params))
         row_to_append = pd.concat([result['metrics'], row], axis=0)
         record = pd.concat([record, row_to_append], axis=1)
     record = record.T
