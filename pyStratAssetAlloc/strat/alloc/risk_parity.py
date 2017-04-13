@@ -9,7 +9,6 @@ from AlgoTrading.api import PortfolioType
 from PyFin.api import HIST
 from decouple import config
 from pyStratAssetAlloc.enum import AssetWeight
-from pyStratAssetAlloc.enum import AssetClass
 from pyStratAssetAlloc.portfolio import Portfolio
 
 
@@ -46,7 +45,6 @@ class RISKPARITY(Strategy):
             price = np.array(self._hist_close[asset][:self._cov_window])[::-1]
             return_asset = np.diff(price) / price[:-1]
             return_matrix = return_asset if return_matrix is None else np.vstack((return_matrix, return_asset))
-
         self._moving_cov = np.cov(return_matrix)
 
     def handle_data(self):
@@ -67,7 +65,6 @@ def run_example():
         '510300.xshg': {
             'target_weight': 0.0,
             'default_weight': 0.075},
-
         '510500.xshg': {
             'target_weight': 0.0,
             'default_weight': 0.075},
@@ -81,7 +78,7 @@ def run_example():
     start_date = dt.datetime(2013, 8, 1)
     end_date = dt.datetime(2017, 2, 28)
     window = config('RISKPARITY_WINDOW', cast=int)
-    tiaocang_freq = config('RISKPAIRTY_TIAOCANG_FREQ', cast=int)
+    tiaocang_freq = config('RISKPARITY_TIAOCANG_FREQ', cast=int)
 
     strategyRunner(userStrategy=RISKPARITY,
                    strategyParameters=(window, assets, tiaocang_freq),
