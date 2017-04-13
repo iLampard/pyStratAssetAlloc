@@ -13,17 +13,16 @@ from pyStratAssetAlloc.enum import AssetClass
 from pyStratAssetAlloc.portfolio import Portfolio
 
 
-# TODO use moving correl matrix as signal
-
 class RISKPARITY(Strategy):
-    def __init__(self, window, assets, weight_type=AssetWeight.RISK_PARITY):
+    def __init__(self, window, assets, tiaocang_freq, weight_type=AssetWeight.RISK_PARITY):
         self._assets = assets
         self._moving_cov = None
         self._weight_type = weight_type
         self._nb_asset = len(self._assets)
         self._hist_close = HIST(window, 'close')
         self._cov_window = window
-        self._count = 0;
+        self._count = 0
+        self._tiaocang_freq = tiaocang_freq
 
     def _update_asset_target_weight(self):
         if self._weight_type == AssetWeight.EQUAL:
@@ -41,7 +40,6 @@ class RISKPARITY(Strategy):
         for asset in self._assets:
             self._assets[asset]['target_weight'] = ret[asset]
 
-
     def _update_cov(self):
         return_matrix = None
         for asset in self._assets:
@@ -52,14 +50,14 @@ class RISKPARITY(Strategy):
         self._moving_cov = np.cov(return_matrix)
 
     def handle_data(self):
-        if self._count % 20 == 0:
+        if self._count % self._tiaocang_freq == 0:
             self._update_cov()
             self._update_asset_target_weight()
             for sec in self.universe:
                 if np.isnan(self._assets[sec]['target_weight']):
                     self._assets[sec]['target_weight'] = self._assets[sec]['default_weight']
                 self.order_to_pct(sec, 1, self._assets[sec]['target_weight'])
-                print self.current_date,self._assets[sec]['target_weight'],sec
+                self.keep('target_weight_' + sec, self._assets[sec]['target_weight'])
         self._count += 1
 
 
@@ -67,52 +65,41 @@ def run_example():
     universe = ['510300.xshg', '510500.xshg', '511010.xshg', '518880.xshg']
     assets = {
         '510300.xshg': {'asset_class': AssetClass.EQUITY,
-                        'path': '..//data//300ETF.csv',
-                        'slope_thresh': 0.03,
-                        'weight_mul': 3,
                         'current_pos': 0.0,
                         'target_weight': 0.0,
                         'default_weight': 0.075},
 
         '510500.xshg': {'asset_class': AssetClass.EQUITY,
-                        'path': '..//data//500ETF.csv',
-                        'slope_thresh': 0.03,
-                        'weight_mul': 3,
                         'current_pos': 0.0,
                         'target_weight': 0.0,
                         'default_weight': 0.075},
         '511010.xshg': {'asset_class': AssetClass.BOND,
-                        'path': '..//data//BondETF.csv',
-                        'slope_thresh': None,
-                        'weight_mul': 3,
                         'current_pos': 0.0,
                         'target_weight': 0.0,
                         'default_weight': 0.75},
         '518880.xshg': {'asset_class': AssetClass.GOLD,
-                        'path': '..//data//GoldETF.csv',
-                        'slope_thresh': 0.01,
-                        'weight_mul': 3,
                         'current_pos': 0.0,
                         'target_weight': 0.0,
                         'default_weight': 0.1}
     }
     start_date = dt.datetime(2013, 8, 1)
     end_date = dt.datetime(2017, 2, 28)
-    window = 250
+    window = config('RISKPARITY_WINDOW', cast=float)
+    tiaocang_freq = config('RISKPARITY_TIAOCANG_FREQ', cast=int)
 
-    print strategyRunner(userStrategy=RISKPARITY,
-                         strategyParameters=(window, assets),
-                         symbolList=universe,
-                         startDate=start_date,
-                         endDate=end_date,
-                         benchmark='000300.zicn',
-                         dataSource=DataSource.WIND,
-                         logLevel='info',
-                         saveFile=True,
-                         portfolioType=PortfolioType.CashManageable,
-                         plot=True,
-                         freq='D',
-                         priceAdj='F')
+    strategyRunner(userStrategy=RISKPARITY,
+                   strategyParameters=(window, assets, tiaocang_freq),
+                   symbolList=universe,
+                   startDate=start_date,
+                   endDate=end_date,
+                   benchmark='000300.zicn',
+                   dataSource=DataSource.WIND,
+                   logLevel='info',
+                   saveFile=True,
+                   portfolioType=PortfolioType.CashManageable,
+                   plot=True,
+                   freq='D',
+                   priceAdj='F')
 
 
 if __name__ == "__main__":
