@@ -45,7 +45,7 @@ class RISKPARITY(Strategy):
             price = np.array(self._hist_close[asset][:self._cov_window])[::-1]
             return_asset = np.diff(price) / price[:-1]
             return_matrix = return_asset if return_matrix is None else np.vstack((return_matrix, return_asset))
-        self._moving_cov = np.cov(return_matrix)
+        self._moving_cov = np.cov(return_matrix) if len(return_matrix[0]) > 0 else None
 
     def handle_data(self):
         if self._count % self._tiaocang_freq == 0:
@@ -80,19 +80,19 @@ def run_example():
     window = config('RISKPARITY_WINDOW', cast=int)
     tiaocang_freq = config('RISKPARITY_TIAOCANG_FREQ', cast=int)
 
-    strategyRunner(userStrategy=RISKPARITY,
-                   strategyParameters=(window, assets, tiaocang_freq),
-                   symbolList=universe,
-                   startDate=start_date,
-                   endDate=end_date,
-                   benchmark='000300.zicn',
-                   dataSource=DataSource.WIND,
-                   logLevel='info',
-                   saveFile=True,
-                   portfolioType=PortfolioType.CashManageable,
-                   plot=True,
-                   freq='D',
-                   priceAdj='F')
+    print strategyRunner(userStrategy=RISKPARITY,
+                         strategyParameters=(window, assets, tiaocang_freq),
+                         symbolList=universe,
+                         startDate=start_date,
+                         endDate=end_date,
+                         benchmark='000300.zicn',
+                         dataSource=DataSource.WIND,
+                         logLevel='info',
+                         saveFile=True,
+                         portfolioType=PortfolioType.CashManageable,
+                         plot=True,
+                         freq='D',
+                         priceAdj='F')
 
 
 if __name__ == "__main__":
