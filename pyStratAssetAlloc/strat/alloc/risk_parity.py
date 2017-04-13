@@ -64,28 +64,24 @@ class RISKPARITY(Strategy):
 def run_example():
     universe = ['510300.xshg', '510500.xshg', '511010.xshg', '518880.xshg']
     assets = {
-        '510300.xshg': {'asset_class': AssetClass.EQUITY,
-                        'current_pos': 0.0,
-                        'target_weight': 0.0,
-                        'default_weight': 0.075},
+        '510300.xshg': {
+            'target_weight': 0.0,
+            'default_weight': 0.075},
 
-        '510500.xshg': {'asset_class': AssetClass.EQUITY,
-                        'current_pos': 0.0,
-                        'target_weight': 0.0,
-                        'default_weight': 0.075},
-        '511010.xshg': {'asset_class': AssetClass.BOND,
-                        'current_pos': 0.0,
-                        'target_weight': 0.0,
-                        'default_weight': 0.75},
-        '518880.xshg': {'asset_class': AssetClass.GOLD,
-                        'current_pos': 0.0,
-                        'target_weight': 0.0,
-                        'default_weight': 0.1}
+        '510500.xshg': {
+            'target_weight': 0.0,
+            'default_weight': 0.075},
+        '511010.xshg': {
+            'target_weight': 0.0,
+            'default_weight': 0.75},
+        '518880.xshg': {
+            'target_weight': 0.0,
+            'default_weight': 0.1}
     }
     start_date = dt.datetime(2013, 8, 1)
     end_date = dt.datetime(2017, 2, 28)
-    window = config('RISKPARITY_WINDOW', cast=float)
-    tiaocang_freq = config('RISKPARITY_TIAOCANG_FREQ', cast=int)
+    window = config('RISKPARITY_WINDOW', cast=int)
+    tiaocang_freq = config('RISKPAIRTY_TIAOCANG_FREQ', cast=int)
 
     strategyRunner(userStrategy=RISKPARITY,
                    strategyParameters=(window, assets, tiaocang_freq),
