@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-
+import os
 import unittest
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
@@ -11,12 +11,13 @@ from pyStratAssetAlloc.strat.alloc import RISKPARITY
 from pyStratAssetAlloc.enum import AssetWeight
 
 
-class Test_Risk_Parity(unittest.TestCase):
+class TestRiskParity(unittest.TestCase):
     def setUp(self):
         self._data = [1] * 3
         self._expected = [1] * 3
         universe = ['510300.xshg', '510500.xshg', '511010.xshg', '518880.xshg']
-        csv_dir = 'data'
+        dir_name = os.path.dirname(os.path.abspath(__file__))
+        csv_dir = os.path.join(dir_name, 'data/')
         assets_1 = {
             '510300.xshg': {
                 'target_weight': 0.0,
@@ -62,23 +63,23 @@ class Test_Risk_Parity(unittest.TestCase):
                 'default_weight': 0.15}
         }
         self._data[0] = {'universe': universe,
-                  'csv_dir': csv_dir,
-                  'assets': assets_1,
-                  'window': 50,
-                  'tiaocang_freq': 10,
-                  'weight_type': AssetWeight.RISK_PARITY}
+                         'csv_dir': csv_dir,
+                         'assets': assets_1,
+                         'window': 50,
+                         'tiaocang_freq': 10,
+                         'weight_type': AssetWeight.RISK_PARITY}
         self._data[1] = {'universe': universe,
-                  'csv_dir': csv_dir,
-                  'assets': assets_2,
-                  'window': 150,
-                  'tiaocang_freq': 20,
-                  'weight_type': AssetWeight.EQUAL}
+                         'csv_dir': csv_dir,
+                         'assets': assets_2,
+                         'window': 150,
+                         'tiaocang_freq': 20,
+                         'weight_type': AssetWeight.EQUAL}
         self._data[2] = {'universe': universe,
-                  'csv_dir': csv_dir,
-                  'assets': assets_3,
-                  'window': 250,
-                  'tiaocang_freq': 30,
-                  'weight_type': AssetWeight.RISK_PARITY}
+                         'csv_dir': csv_dir,
+                         'assets': assets_3,
+                         'window': 250,
+                         'tiaocang_freq': 30,
+                         'weight_type': AssetWeight.RISK_PARITY}
 
         expected_index = ['annual_return', 'annual_volatiltiy', 'sortino_ratio',
                           'sharp_ratio', 'max_draw_down', 'winning_days', 'lossing_days']
@@ -94,7 +95,6 @@ class Test_Risk_Parity(unittest.TestCase):
             data=[[0.064287113497], [0.0461884888264], [1.86254817286], [1.39184275412], [-0.0557657297607], [490],
                   [380]], index=expected_index,
             columns=['metrics'])
-
 
     def test_risk_parity_strat(self):
         for i in range(len(self._data)):

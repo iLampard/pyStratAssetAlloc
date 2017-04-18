@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-
+import os
 import unittest
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
@@ -10,12 +10,13 @@ from AlgoTrading.api import PortfolioType
 from pyStratAssetAlloc.strat.timing import GFLLT
 
 
-class Test_GF_LLT(unittest.TestCase):
+class TestGFLLT(unittest.TestCase):
     def setUp(self):
         self._data = [1] * 2
         self._expected = [1] * 2
         universe = ['000300.zicn']
-        csv_dir = 'data'
+        dir_name = os.path.dirname(os.path.abspath(__file__))
+        csv_dir = os.path.join(dir_name, 'data/')
         self._data[0] = {'universe': universe,
                          'csv_dir': csv_dir,
                          'alpha': 2.0 / 61.0}

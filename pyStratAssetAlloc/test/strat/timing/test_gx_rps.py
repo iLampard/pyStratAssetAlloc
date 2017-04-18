@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-
+import os
 import unittest
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
@@ -10,32 +10,33 @@ from AlgoTrading.api import PortfolioType
 from pyStratAssetAlloc.strat.timing import GXRPS
 
 
-class Test_GX_RPS(unittest.TestCase):
+class TestGXRPS(unittest.TestCase):
     def setUp(self):
         self._data = [1] * 4
         self._expected = [1] * 4
         universe = ['000300.zicn']
-        csv_dir = 'data'
+        dir_name = os.path.dirname(os.path.abspath(__file__))
+        csv_dir = os.path.join(dir_name, 'data/')
         self._data[0] = {'universe': universe,
                          'csv_dir': csv_dir,
                          'window_min_max': 200,
                          'window_ma': 5,
-                         'vol_diff_slice':True}
+                         'vol_diff_slice': True}
         self._data[1] = {'universe': universe,
                          'csv_dir': csv_dir,
                          'window_min_max': 200,
                          'window_ma': 10,
-                         'vol_diff_slice':False}
+                         'vol_diff_slice': False}
         self._data[2] = {'universe': universe,
                          'csv_dir': csv_dir,
                          'window_min_max': 250,
                          'window_ma': 10,
-                         'vol_diff_slice':True}
+                         'vol_diff_slice': True}
         self._data[3] = {'universe': universe,
                          'csv_dir': csv_dir,
                          'window_min_max': 300,
                          'window_ma': 15,
-                         'vol_diff_slice':False}
+                         'vol_diff_slice': False}
         expected_index = ['annual_return', 'annual_volatiltiy', 'sortino_ratio',
                           'sharp_ratio', 'max_draw_down', 'winning_days', 'lossing_days']
         self._expected[0] = pd.DataFrame(
@@ -61,7 +62,8 @@ class Test_GX_RPS(unittest.TestCase):
         for i in range(len(self._data)):
             data = self._data[i]
             perf = strategyRunner(userStrategy=GXRPS,
-                                  strategyParameters=(data['window_min_max'], data['window_ma'],data['vol_diff_slice']),
+                                  strategyParameters=(
+                                  data['window_min_max'], data['window_ma'], data['vol_diff_slice']),
                                   symbolList=data['universe'],
                                   dataSource=DataSource.CSV,
                                   csvDir=data['csv_dir'],

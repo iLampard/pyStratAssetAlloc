@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-
+import os
 import unittest
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
@@ -10,12 +10,13 @@ from AlgoTrading.api import PortfolioType
 from pyStratAssetAlloc.strat.timing import GFMovingAverageCrossStrategy
 
 
-class Test_GF_MA(unittest.TestCase):
+class TestGFMA(unittest.TestCase):
     def setUp(self):
         self._data = [1] * 3
         self._expected = [1] * 3
         universe = ['000300.zicn']
-        csv_dir = 'data'
+        dir_name = os.path.dirname(os.path.abspath(__file__))
+        csv_dir = os.path.join(dir_name, 'data/')
         self._data[0] = {'universe': universe,
                          'csv_dir': csv_dir,
                          'ma_short': 10,
