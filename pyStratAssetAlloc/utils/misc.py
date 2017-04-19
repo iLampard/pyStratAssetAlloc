@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
-
 import pandas as pd
+
 from pyStratAssetAlloc.enum import DataSource
 from pyStratAssetAlloc.enum import DfReturnType
 from pyStratAssetAlloc.enum import FreqType
@@ -42,3 +41,13 @@ def get_sec_price(start_date, end_date, sec_ids, data_source, freq=FreqType.EOD,
         raise NotImplementedError
 
     return price_data
+
+
+def find_in_interval(element, interval_list):
+    """
+    :param element: float
+    :param interval_list: list of interval class type
+    :return: the index of the interval that contains the element
+    """
+    check_interval = [element in interval for interval in interval_list]
+    return check_interval.index(True)
