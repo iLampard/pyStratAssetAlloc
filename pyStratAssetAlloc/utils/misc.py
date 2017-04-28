@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import pandas as pd
+from PyFin.api import nthWeekDay
+from PyFin.api import advanceDateByCalendar
 from pyStratAssetAlloc.enum import DataSource
 from pyStratAssetAlloc.enum import DfReturnType
 from pyStratAssetAlloc.enum import FreqType
@@ -42,3 +44,43 @@ def get_sec_price(start_date, end_date, sec_ids, data_source, freq=FreqType.EOD,
         raise NotImplementedError
 
     return price_data
+
+
+def find_in_interval(element, interval_list):
+    """
+    :param element: float
+    :param interval_list: list of interval class type
+    :return: the index of the interval that contains the element
+    """
+    check_interval = [element in interval for interval in interval_list]
+    return check_interval.index(True)
+
+
+def get_continuous_future_contract(universe, current_date, del_rule, contract_prefix_len=2):
+    """
+    :param universe: dict, key = maturity month, value = contract id
+    :param current_date: datetime, current datetime
+    :param del_rule: dict, termination rule of fut contract
+    :param contract_prefix_len: int, optional, length of the prefix of contract ids
+    :return: the contract id to use, given current date
+    """
+
+    year = current_date.year
+    month = current_date.month
+    del_day = nthWeekDay(nth=del_rule['nth'],
+                         dayOfWeek=del_rule['day_of_week'],
+                         month=month,
+                         year=year)
+    del_date = advanceDateByCalendar(holidayCenter='China.SSE',
+                                     referenceDate=del_day,
+                                     period='-1b')
+    contract_month = month if current_date < del_date else month + 1
+    contract_year = year - 2000
+    if contract_month > 12:
+        contract_month -= 12
+        contract_year += 1
+
+    suffix = universe[0].split('.')[1]
+    prefix = universe[0].split('.')[0][:contract_prefix_len]
+    contract_id = '%s%02d%02d.%s' % (prefix, contract_year, contract_month, suffix)
+    return contract_id
