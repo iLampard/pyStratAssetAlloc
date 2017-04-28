@@ -34,13 +34,17 @@ class GFMovingAverageCrossStrategy(Strategy):
         for sec in self.universe:
             if self.cross == Cross.Dead_x:
                 if self.secPos[sec] <= 0 <= self.diff_distance[sec]:  # 上一个为死叉且间距缩小(间距为负，故diff_distance为正)： 看多
+                    self.order_to_pct(sec, 1, 0)
                     self.order_to_pct(sec, 1, 1)
                 elif self.diff_distance[sec] <= 0 <= self.secPos[sec]:  # 上一个为死叉且间距扩大(间距为负，故diff_distance为负)： 看空
+                    self.order_to_pct(sec, -1, 0)
                     self.order_to_pct(sec, -1, 1)
             elif self.cross == Cross.Gold_x:
                 if self.secPos[sec] <= 0 <= self.diff_distance[sec]:  # 上一个为金叉且间距扩大(间距为正，故diff_distance为正)： 看多
+                    self.order_to_pct(sec, 1, 0)
                     self.order_to_pct(sec, 1, 1)
                 elif self.diff_distance[sec] <= 0 <= self.secPos[sec]:  # 上一个为金叉且间距缩小(间距为正，故diff_distance为负)： 看空
+                    self.order_to_pct(sec, -1, 0)
                     self.order_to_pct(sec, -1, 1)
 
             # update cross status

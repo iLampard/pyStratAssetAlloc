@@ -34,8 +34,10 @@ class GXRPS(Strategy):
             signal = calc_vol_diff(price_open, price_high, price_low)
 
             if signal > 0 >= self.secPos[sec]:
+                self.order_to_pct(sec, 1, 0)
                 self.order_to_pct(sec, 1, 1)
             elif signal < 0 <= self.secPos[sec]:
+                self.order_to_pct(sec, -1, 0)
                 self.order_to_pct(sec, -1, 1)
 
 
@@ -59,11 +61,11 @@ def get_window_layer(rps):
 
 def run_example(run_optimization=False):
     universe = ['000300.zicn']
-    start_date = dt.datetime(2010, 1, 1)
-    end_date = dt.datetime(2017, 4, 1)
-    window_min_max = config('GX_WINDOW_MIN_MAX', default=250, cast=int)
-    window_ma = config('GX_WINDOW_MA', default=9, cast=int)
-    vol_diff_slice = config('GX_VOL_DIFF_SLICE', default=False, cast=bool)
+    start_date = dt.datetime(2005, 1, 1)
+    end_date = dt.datetime(2017, 4, 13)
+    window_min_max = config('GX_WINDOW_MIN_MAX', default=215, cast=int)
+    window_ma = config('GX_WINDOW_MA', default=7, cast=int)
+    vol_diff_slice = config('GX_VOL_DIFF_SLICE', default=True, cast=bool)
     if run_optimization:
         params_set, params_name = parameters_generator()
         run_param_grid_search(strat=GXRPS,
@@ -100,7 +102,7 @@ if __name__ == "__main__":
     Settings.set_source(DataSource.WIND)
     startTime = dt.datetime.now()
     print("Start: %s" % startTime)
-    run_example(run_optimization=True)
+    run_example(run_optimization=False)
     endTime = dt.datetime.now()
     print("End : %s" % endTime)
     print("Elapsed: %s" % (endTime - startTime))

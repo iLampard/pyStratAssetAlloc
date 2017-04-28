@@ -17,17 +17,19 @@ class GFLLT(Strategy):
     def handle_data(self):
         for sec in self.universe:
             if self.signal[sec] > 0 >= self.secPos[sec]:
+                self.order_to_pct(sec, 1, 0)
                 self.order_to_pct(sec, 1, 1)
                 # self.order_pct(sec, 1, 1)
             elif self.signal[sec] < 0 <= self.secPos[sec]:
+                self.order_to_pct(sec, -1, 0)
                 self.order_to_pct(sec, -1, 1)
                 # self.order_pct(sec, -1, 1)
 
 
 def run_example():
-    universe = ['000300.zicn']
-    start_date = dt.datetime(2013, 1, 1)
-    end_date = dt.datetime(2017, 4, 1)
+    universe = ['000905.zicn']
+    start_date = dt.datetime(2016, 1, 1)
+    end_date = dt.datetime(2017, 4, 24)
     alpha = config('GF_LLT_ALPHA', default=2.0/61, cast=float)
 
     strategyRunner(userStrategy=GFLLT,
